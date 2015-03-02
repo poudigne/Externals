@@ -38,6 +38,11 @@ namespace HighscoreManager.Highscore
       // If required by the server, set the credentials.
       request.Credentials = CredentialCache.DefaultCredentials;
       // Get the response.
+
+			request.Method = "POST";
+			request.
+
+
       var response = (HttpWebResponse)request.GetResponse();
       // Display the status.
       Console.WriteLine(response.StatusDescription);
