@@ -8,5 +8,6 @@ namespace Network.PSoft.BusinessObject
   public interface IURLParameters
   {
     string GetParametersString();
+    Dictionary<string,string> GetParametersDict();
   }
 }

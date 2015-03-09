@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Security.Policy;
-using log4net;
+using System.Text;
 
 namespace Network.PSoft.Network
 {
@@ -14,7 +14,6 @@ namespace Network.PSoft.Network
 
     public RemotingService()
     {
-
     }
     public RemotingService(string name)
     {
@@ -30,38 +29,63 @@ namespace Network.PSoft.Network
 
     public string GetGameName()
     {
-      return this.gameName;
+      return gameName;
     }
 
-    public string SendRequest(string link)
+    public string SendRequestPost(string link, string parameters)
     {
-      // Create a request for the URL. 		
+      var data = Encoding.ASCII.GetBytes(parameters);
+
       var request = WebRequest.Create(link);
       // If required by the server, set the credentials.
       request.Credentials = CredentialCache.DefaultCredentials;
-      var log = LogManager.GetLogger("DefaultFileLogger");
-      log.Debug(String.Format("Sending message : {0}",link));
+      request.Method = RequestMethod.POST.ToString();
+      request.ContentType = "application/x-www-form-urlencoded";
+      request.ContentLength = data.Length;
       
-      // Get the response
+      using (var stream = request.GetRequestStream())
+      {
+        stream.Write(data, 0, data.Length);
+      }
+
       var response = (HttpWebResponse)request.GetResponse();
-
-      // Display the status.
-      Console.WriteLine(response.StatusDescription);
-      // Get the stream containing content returned by the server.
       var dataStream = response.GetResponseStream();
-      // Open the stream using a StreamReader for easy access.
-      var reader = new StreamReader(dataStream);
-      // Read the content. 
-      var responseFromServer = reader.ReadToEnd();
-      // Display the content.
-      Console.WriteLine(responseFromServer);
-      log.Debug(String.Format("Received response : {0}", responseFromServer));
-      // Cleanup the streams and the response.
-      reader.Close();
-      dataStream.Close();
-      response.Close();
+      if (dataStream != null)
+      {
+        var reader = new StreamReader(dataStream);
+        var responseFromServer = reader.ReadToEnd();
+      
+        reader.Close();
+        dataStream.Close();
+        response.Close();
 
-      return responseFromServer;
+        return responseFromServer;
+      }
+      return string.Empty;
+    }
+
+    public string SendRequestPost2(string link, Dictionary<string,string> parameters, out string request)
+    {
+      using (var wb = new WebClient())
+      {
+        var data = new NameValueCollection();
+        var stringValue = string.Empty;
+        foreach (var parameter in parameters)
+        {
+          data[parameter.Key] = parameter.Value;
+        }
+
+        request = string.Empty;
+
+        var msg = String.Format("[{0}], Sending POST request, Link : {1}, Parameters: {2}", DateTime.Now, link, stringValue);
+        Logging.LoggingService.LogDebug(msg);
+
+        
+
+        var response = wb.UploadValues(link, "POST", data);
+        var s = wb.Encoding.GetString(response);
+        return s;
+      }
     }
   }
 
@@ -69,8 +93,8 @@ namespace Network.PSoft.Network
 
   public enum RequestMethod
   {
-    Post,
-    Method
+    POST,
+    GET
   }
 
   public enum RequestAction

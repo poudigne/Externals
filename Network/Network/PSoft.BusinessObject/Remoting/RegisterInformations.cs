@@ -58,5 +58,17 @@ namespace Network.PSoft.BusinessObject.Remoting
                            "email={4}",
         username, firstname, lastname, password, email);
     }
+
+    public Dictionary<string,string> GetParametersDict()
+    {
+      var dict = new Dictionary<string, string>();
+
+      dict.Add("username", username);
+      dict.Add("first_name", firstname);
+      dict.Add("last_name", lastname);
+      dict.Add("password", password);
+      dict.Add("email", email);
+      return dict;
+    }
   }
 }

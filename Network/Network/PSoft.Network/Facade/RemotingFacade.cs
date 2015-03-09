@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Network.PSoft.BusinessObject;
@@ -13,7 +14,9 @@ namespace Network.PSoft.Network.Facade
     private RemotingService instance;
 
     private const String GET_LINK = "http://api.francoischolette.com/api/1.0/{0}?{1}";
-    private const String POST_LINK = "http://api.francoischolette.com/api/1.0/{0}/post/{1}/{2}";
+    private const String POST_LINK_BYGAMES = "http://api.francoischolette.com/api/1.0/{0}/post/{1}";
+    public const String POST_LINK = "http://api.francoischolette.com/api/1.0/{0}";
+
 
     public RemotingFacade(string gameName)
     {
@@ -25,11 +28,11 @@ namespace Network.PSoft.Network.Facade
       return instance ?? (instance = new RemotingService(string.Empty));
     }
 
-    public void SendRegisterAccountRequest(IURLParameters registerInformations)
+    public string SendRegisterAccountRequest(IURLParameters registerInformations, out string request)
     {
       string link = BuildURL(registerInformations, RequestAction.CreateUser);
-      instance.SendRequest(link);
-
+      // Write the string to a file.
+      return instance.SendRequestPost2(link, registerInformations.GetParametersDict(), out request);
     }
 
     private string BuildURL(IURLParameters registerInformations, RequestAction action)
@@ -41,7 +44,7 @@ namespace Network.PSoft.Network.Facade
         case RequestAction.Login:
           break;
         case RequestAction.CreateUser:
-          return string.Format(POST_LINK, instance.GetGameName() ,GetLinkActionString(action), registerInformations.GetParametersString());
+          return string.Format(POST_LINK, GetLinkActionString(action));
         default:
           return string.Empty;
       }
