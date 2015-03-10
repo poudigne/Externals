@@ -64,7 +64,7 @@ namespace Network.PSoft.Network
       return string.Empty;
     }
 
-    public string SendRequestPost2(string link, Dictionary<string,string> parameters, out string request)
+    public string SendRequestPost2(string link, Dictionary<string,string> parameters)
     {
       using (var wb = new WebClient())
       {
@@ -75,12 +75,8 @@ namespace Network.PSoft.Network
           data[parameter.Key] = parameter.Value;
         }
 
-        request = string.Empty;
-
         var msg = String.Format("[{0}], Sending POST request, Link : {1}, Parameters: {2}", DateTime.Now, link, stringValue);
         Logging.LoggingService.LogDebug(msg);
-
-        
 
         var response = wb.UploadValues(link, "POST", data);
         var s = wb.Encoding.GetString(response);

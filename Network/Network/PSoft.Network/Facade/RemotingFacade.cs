@@ -28,11 +28,11 @@ namespace Network.PSoft.Network.Facade
       return instance ?? (instance = new RemotingService(string.Empty));
     }
 
-    public string SendRegisterAccountRequest(IURLParameters registerInformations, out string request)
+    public string SendRegisterAccountRequest(IURLParameters registerInformations)
     {
       string link = BuildURL(registerInformations, RequestAction.CreateUser);
       // Write the string to a file.
-      return instance.SendRequestPost2(link, registerInformations.GetParametersDict(), out request);
+      return instance.SendRequestPost(link, registerInformations.GetParametersString());
     }
 
     private string BuildURL(IURLParameters registerInformations, RequestAction action)

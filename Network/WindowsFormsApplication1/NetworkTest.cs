@@ -32,7 +32,7 @@ namespace Network._PSoft.Test.Network
       };
 
       var Request = string.Empty;
-      var Response = remotingService.SendRegisterAccountRequest(registerInformations, out Request );
+      var Response = remotingService.SendRegisterAccountRequest(registerInformations);
       this.tbSentRequest.Text = Request;
       this.textBox1.Text += Response;
       
